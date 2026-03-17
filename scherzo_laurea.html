@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Alert</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; min-height:100vh; font-family:'Courier New',monospace; color:#00ff41; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
+  #ui { position:relative; z-index:10; width:100%; max-width:1000px; padding:20px; }
+  .box { border:1px solid #00ff41; padding:24px; background:rgba(0,0,0,0.88); }
+  .title { font-size:13px; color:#ff3333; margin-bottom:18px; letter-spacing:2px; text-transform:uppercase; }
+  .log { font-size:11px; color:#00aa2a; line-height:1.9; min-height:130px; margin-bottom:18px; }
+  .log .hi   { color:#00ff41; }
+  .log .warn { color:#ffaa00; }
+  .log .err  { color:#ff4444; }
+  .bar-label { font-size:11px; margin-bottom:6px; color:#00cc33; }
+  .bar-wrap  { border:1px solid #00aa2a; height:18px; background:#001200; margin-bottom:6px; }
+  .bar-fill  { height:100%; background:#00ff41; width:0%; transition:width 0.1s linear; }
+  .pct       { font-size:11px; color:#00ff41; text-align:right; }
+  .cursor    { display:inline-block; width:8px; height:12px; background:#00ff41; animation:blink 0.8s step-end infinite; vertical-align:middle; margin-left:2px; }
+  @keyframes blink { 50%{opacity:0;} }
+
+  /* ── SCHERMATA FINALE ── modifica qui dentro! */
+  #reveal { display:none; text-align:center; padding:32px 20px; }
+  #reveal .emoji { font-size:56px; margin-bottom:14px; }
+  #reveal h2 { font-size:22px; color:#00ff41; letter-spacing:4px; margin-bottom:10px; }
+  #reveal .sub { font-size:14px; color:#00cc33; line-height:1.8; margin-bottom:16px; }
+  #reveal .nome { font-size:20px; color:#ffff00; letter-spacing:3px; margin:14px 0 6px; }
+  #reveal .voto { font-size:14px; color:#00ff41; }
+  #reveal .msg-extra { font-size:12px; color:#00aa2a; margin-top:20px; line-height:1.8; }
+</style>
+</head>
+<body>
+
+<canvas id="mc"></canvas>
+
+<div id="ui">
+
+  <!-- FASE 1: finta schermata malware -->
+  <div id="phase1" class="box">
+    <div class="title">⚠ system alert — threat detected</div>
+    <div class="log" id="log"></div>
+    <div class="bar-label" id="bar-label">Initializing...</div>
+    <div class="bar-wrap"><div class="bar-fill" id="bar"></div></div>
+    <div class="pct" id="pct">0%</div>
+  </div>
+
+  <!-- FASE 2: rivelazione scherzo — MODIFICA QUI -->
+  <div id="reveal" class="box">
+    <div class="emoji">🎓</div>
+    <h2>GRAZIE</h2>
+    <div class="sub">
+      Nessun virus. Nessun malware.<br>
+      Solo un laureando con troppo tempo libero.
+    </div>
+    <div class="nome">Matteo</div>
+    <div class="voto">si è laureato/a 🎉 (speriamo con 104)</div>
+    <div class="msg-extra">
+      <!-- Aggiungi qui un messaggio extra, foto, ecc. -->
+      Grazie a tutti per esserci stati in questo percorso!
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── MATRIX BACKGROUND ── */
+const canvas = document.getElementById('mc');
+const ctx = canvas.getContext('2d');
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const fs = 14;
+let drops = [];
+const chars = 'アイウエオカキクケコ01アBCDEF#$%XYZ!@&*';
+
+function initDrops() {
+  const cols = Math.floor(canvas.width / fs);
+  drops = Array(cols).fill(1);
+}
+initDrops();
+window.addEventListener('resize', initDrops);
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = fs + 'px monospace';
+  for (let i = 0; i < drops.length; i++) {
+    const c = chars[Math.floor(Math.random() * chars.length)];
+    const b = Math.random();
+    ctx.fillStyle = b > 0.95 ? '#ffffff' : b > 0.6 ? '#00ff41' : '#004a10';
+    ctx.fillText(c, i * fs, drops[i] * fs);
+    if (drops[i] * fs > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 45);
+
+/* ── LOG MESSAGES ── modifica i testi o i tempi (ms) come vuoi */
+const steps = [
+  { t: 300,  cls: 'hi',   msg: '> Connessione al server remoto... OK' },
+  { t: 750,  cls: 'warn', msg: '> [WARN] Firewall bypass rilevato' },
+  { t: 1200, cls: '',     msg: '> Scansione filesystem in corso...' },
+  { t: 1700, cls: 'err',  msg: '> [CRIT] Backdoor installata su /etc/' },
+  { t: 2200, cls: '',     msg: '> Estrazione dati: documenti, foto, password...' },
+  { t: 2800, cls: 'err',  msg: '> [CRIT] Cifratura file avviata — AES-256' },
+  { t: 3300, cls: 'warn', msg: '> Invio dati a 185.220.xxx.xxx...' },
+  { t: 3800, cls: 'hi',   msg: '> Download payload secondario... 14.3 MB' },
+  { t: 4300, cls: 'err',  msg: '> [CRIT] Accesso webcam... ATTIVO' },
+  { t: 4800, cls: '',     msg: '> Modifica registro di sistema...' },
+  { t: 5300, cls: 'warn', msg: '> Persistenza garantita al riavvio' },
+  { t: 5900, cls: 'err',  msg: '> OPERAZIONE COMPLETATA — 847 file cifrati' },
+];
+
+/* ── PROGRESS BAR ── */
+const logEl    = document.getElementById('log');
+const barEl    = document.getElementById('bar');
+const pctEl    = document.getElementById('pct');
+const labelEl  = document.getElementById('bar-label');
+let prog = 0;
+
+function startProgress() {
+  const iv = setInterval(() => {
+    prog = Math.min(prog + Math.random() * 2.2, 100);
+    barEl.style.width = prog + '%';
+    pctEl.textContent = Math.floor(prog) + '%';
+    if (prog >= 100) {
+      clearInterval(iv);
+      pctEl.textContent = '100%';
+      labelEl.textContent = 'Download completato.';
+      setTimeout(showReveal, 1200);
+    }
+  }, 80);
+}
+
+steps.forEach(s => {
+  setTimeout(() => {
+    const line = document.createElement('div');
+    line.className = s.cls;
+    line.innerHTML = s.msg + '<span class="cursor"></span>';
+    logEl.appendChild(line);
+    logEl.querySelectorAll('.cursor').forEach((c, i, arr) => {
+      if (i < arr.length - 1) c.remove();
+    });
+    logEl.scrollTop = logEl.scrollHeight;
+    if (s.t === 300) {
+      labelEl.textContent = 'Downloading malware.exe...';
+      startProgress();
+    }
+  }, s.t);
+});
+
+/* ── REVEAL ── */
+function showReveal() {
+  document.getElementById('phase1').style.display = 'none';
+  document.getElementById('reveal').style.display = 'block';
+}
+</script>
+</body>
+</html>
