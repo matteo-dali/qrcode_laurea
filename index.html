@@ -39,14 +39,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .gbar { position:absolute; left:0; right:0; height:3px; }
 .gblk { position:absolute; background:#000; opacity:0.75; }
 
-/* ══ FASE 2 — MATRIX + POPUP ══ */
+/* ══ MATRIX CANVAS ══ */
+#mc { position:fixed; inset:0; width:100%; height:100%; z-index:1; display:none; }
+
+/* ══ FASE 2 — POPUP ══ */
 #phase2 { position:fixed; inset:0; z-index:50; display:none; }
-#mc { position:absolute; inset:0; width:100%; height:100%; }
 
 .popup {
   position:absolute; z-index:60; font-family:'Courier New',monospace;
   border:2px solid; min-width:210px; max-width:290px;
-  box-shadow:4px 4px 0 rgba(0,0,0,0.6); display:none; font-size:11px;
+  box-shadow:4px 4px 0 rgba(0,0,0,0.6); font-size:11px;
 }
 .pbar {
   display:flex; align-items:center; justify-content:space-between;
@@ -83,7 +85,52 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .pb  .pbar { background:#00ccff; color:#000; }
 .pb  .pbtn { background:#00ccff; color:#000; }
 
-/* ══ FASE 3 — MALWARE LOADER ══ */
+/* ══ BOTTONE CHIUDI TUTTO ══ */
+#close-all-btn {
+  position:fixed; bottom:50%; left:50%; transform:translateX(-50%);
+  z-index:90; display:none;
+  background:#cc0000; color:#fff;
+  font-family:'Courier New',monospace; font-size:30px; font-weight:bold;
+  padding:20px 50px; border:5px solid #ff4444;
+  cursor:pointer; letter-spacing:2px; text-transform:uppercase;
+  box-shadow: 0 0 50px #ff0000, 0 0 80px #cc0000;
+  animation: btnPulse 0.5s step-end infinite;
+}
+@keyframes btnPulse {
+  0%  { background:#cc0000; border-color:#ff4444; }
+  50% { background:#ff0000; border-color:#ffffff; }
+}
+
+/* ══ JUMPSCARE ══ */
+#jumpscare {
+  position:fixed; inset:0; z-index:65;
+  display:none; align-items:center; justify-content:center;
+  background:#000;
+  animation:sirenBg 0.4s step-end infinite;
+}
+@keyframes sirenBg {
+  0%   { background:#000; }
+  50%  { background:#1a0000; }
+}
+#jumpscare .skull {
+  font-size:38vw; line-height:1;
+  animation:skullBlink 0.35s step-end infinite;
+  user-select:none;
+  filter: drop-shadow(0 0 40px #ff0000);
+}
+@keyframes skullBlink {
+  0%   { opacity:1;    color:#ff0000; }
+  50%  { opacity:0.15; color:#ff4444; }
+}
+#jumpscare .siren-text {
+  position:absolute; bottom:8%;
+  font-family:'Courier New',monospace; font-size:3vw; font-weight:bold;
+  color:#ff0000; letter-spacing:6px; text-transform:uppercase;
+  animation:textBlink 0.4s step-end infinite;
+}
+@keyframes textBlink { 0%{opacity:1;} 50%{opacity:0;} }
+
+/* ══ FASE 3 ══ */
 #phase3 {
   position:fixed; inset:0; z-index:70;
   display:none; align-items:center; justify-content:center; padding:20px;
@@ -92,19 +139,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   border:1px solid #00ff41; padding:24px; background:rgba(0,0,0,0.92);
   max-width:600px; width:100%; font-family:'Courier New',monospace; color:#00ff41;
 }
-#phase3 .ttl { font-size:23px; color:#ff3333; margin-bottom:18px; letter-spacing:2px; text-transform:uppercase; }
-#phase3 .log { font-size:21px; color:#00aa2a; line-height:1.9; height:360px; overflow-y:auto; margin-bottom:18px; }
+#phase3 .ttl  { font-size:23px; color:#ff3333; margin-bottom:18px; letter-spacing:2px; text-transform:uppercase; }
+#phase3 .log  { font-size:21px; color:#00aa2a; line-height:1.9; height:360px; overflow-y:auto; margin-bottom:18px; }
 #phase3 .log .hi   { color:#00ff41; }
 #phase3 .log .warn { color:#ffaa00; }
 #phase3 .log .err  { color:#ff4444; }
 #phase3 .blbl { font-size:21px; margin-bottom:6px; color:#00cc33; }
-#phase3 .bwrap { border:1px solid #00aa2a; height:18px; background:#001200; margin-bottom:6px; }
-#phase3 .bfill { height:100%; background:#00ff41; width:0%; transition:width 0.1s linear; }
-#phase3 .bpct  { font-size:21px; color:#00ff41; text-align:right; }
+#phase3 .bwrap{ border:1px solid #00aa2a; height:18px; background:#001200; margin-bottom:6px; }
+#phase3 .bfill{ height:100%; background:#00ff41; width:0%; transition:width 0.1s linear; }
+#phase3 .bpct { font-size:21px; color:#00ff41; text-align:right; }
 .cur { display:inline-block; width:8px; height:12px; background:#00ff41; animation:blink .8s step-end infinite; vertical-align:middle; margin-left:2px; }
 @keyframes blink { 50%{opacity:0;} }
 
-/* ══ FASE 4 — REVEAL ══ */
+/* ══ FASE 4 ══ */
 #phase4 {
   position:fixed; inset:0; z-index:80;
   display:none; align-items:center; justify-content:center; padding:20px;
@@ -149,37 +196,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <!-- ══ GLITCH ══ -->
 <div id="glitch-overlay"></div>
 
+<!-- ══ MATRIX CANVAS ══ -->
+<canvas id="mc"></canvas>
+
 <!-- ══ FASE 2 ══ -->
-<div id="phase2">
-  <canvas id="mc"></canvas>
-  <div class="popup pw" id="pop1" style="top:6%;left:4%;">
-    <div class="pbar">⚠ Attenzione!<div class="x">✕</div></div>
-    <div class="pbody"><b>VIRUS RILEVATO!</b>Il tuo PC è infetto da 47 virus.<br>Clicca OK per rimuoverli subito!<div class="pbtn">OK rimuovi ora!</div></div>
-  </div>
-  <div class="popup pv" id="pop2" style="top:4%;right:4%;">
-    <div class="pbar">☠ SYSTEM32 ERROR<div class="x">✕</div></div>
-    <div class="pbody"><b>CRITICAL FAILURE</b>C:\Windows\System32 corrotto.<br>Hacker sta accedendo ai tuoi file!<div class="pbtn">BLOCCA ORA</div></div>
-  </div>
-  <div class="popup pa" id="pop3" style="top:36%;left:2%;">
-    <div class="pbar">🎰 Hai vinto!<div class="x">✕</div></div>
-    <div class="pbody"><b>SEI IL VISITATORE FORTUNATO!</b>Hai vinto un iPhone 15 Pro Max!<br>Riscatta il tuo premio adesso!<div class="pbtn">RISCATTA GRATIS</div></div>
-  </div>
-  <div class="popup pe" id="pop4" style="top:52%;right:3%;">
-    <div class="pbar">🔴 Windows Defender<div class="x">✕</div></div>
-    <div class="pbody"><b>Trojan.Win32.Malware detected</b>Dati bancari a rischio!<br>Chiamare: +39 02 9999 0000<div class="pbtn">Chiama adesso</div></div>
-  </div>
-  <div class="popup pf" id="pop5" style="top:70%;left:14%;">
-    <div class="pbar">💚 Offerta speciale!<div class="x">✕</div></div>
-    <div class="pbody"><b>ANTIVIRUS GRATIS PER SEMPRE!</b>Scarica SuperProtect Pro 2024<br>solo per te — completamente FREE!<div class="pbtn">SCARICA ORA</div></div>
-  </div>
-  <div class="popup pw" id="pop6" style="top:18%;left:28%;">
-    <div class="pbar">⚡ Adobe Flash Player<div class="x">✕</div></div>
-    <div class="pbody"><b>Aggiornamento richiesto</b>Flash Player non aggiornato.<br>Aggiorna subito per continuare.<div class="pbtn">Aggiorna Flash</div></div>
-  </div>
-  <div class="popup pv" id="pop7" style="bottom:4%;right:18%;">
-    <div class="pbar">💀 RANSOMWARE ALERT<div class="x">✕</div></div>
-    <div class="pbody"><b>I TUOI FILE SONO CIFRATI</b>Paga 0.5 BTC entro 24 ore<br>oppure perdi tutto per sempre.<div class="pbtn">Paga riscatto</div></div>
-  </div>
+<div id="phase2"></div>
+
+<!-- ══ BOTTONE CHIUDI TUTTO ══ -->
+<button id="close-all-btn" onclick="triggerJumpscare()">⛔ CLICCA PER CHIUDERE TUTTO</button>
+
+<!-- ══ JUMPSCARE ══ -->
+<div id="jumpscare">
+  <div class="skull">💀</div>
+  <div class="siren-text">⚠ SISTEMA COMPROMESSO ⚠</div>
 </div>
 
 <!-- ══ FASE 3 ══ -->
@@ -207,6 +236,53 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 
 <script>
+/* ══ AUDIO ══ */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playSiren(durationMs) {
+  // a questo punto l'utente ha appena cliccato, il contesto è sbloccato
+  audioCtx.resume().then(() => {
+    try {
+      const endTime = audioCtx.currentTime + durationMs / 1000;
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      const dist = audioCtx.createWaveShaper();
+      const curve = new Float32Array(256);
+      for (let i = 0; i < 256; i++) {
+        const x = (i * 2) / 256 - 1;
+        curve[i] = (Math.PI + 300) * x / (Math.PI + 300 * Math.abs(x));
+      }
+      dist.curve = curve;
+      osc.connect(dist); dist.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.55, audioCtx.currentTime);
+      let t = audioCtx.currentTime;
+      while (t < endTime) {
+        osc.frequency.setValueAtTime(400, t);
+        osc.frequency.linearRampToValueAtTime(1200, t + 0.45);
+        osc.frequency.linearRampToValueAtTime(400, t + 0.9);
+        t += 0.9;
+      }
+      osc.start(audioCtx.currentTime); osc.stop(endTime);
+
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.connect(gain2); gain2.connect(audioCtx.destination);
+      osc2.type = 'sine';
+      gain2.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      let t2 = audioCtx.currentTime;
+      while (t2 < endTime) {
+        osc2.frequency.setValueAtTime(800, t2);
+        osc2.frequency.linearRampToValueAtTime(2400, t2 + 0.45);
+        osc2.frequency.linearRampToValueAtTime(800, t2 + 0.9);
+        t2 += 0.9;
+      }
+      osc2.start(audioCtx.currentTime); osc2.stop(endTime);
+    } catch(e) { console.warn('Audio error:', e); }
+  });
+}
+
 /* ══ FASE 1 ══ */
 const btcBar = document.getElementById('btc-bar');
 const btcPct = document.getElementById('btc-pct');
@@ -260,33 +336,33 @@ function startGlitch() {
 
 /* ══ FASE 2 ══ */
 const POPUP_TEMPLATES = [
-  { cls:'pw', title:'⚠ Attenzione!',         bold:'VIRUS RILEVATO!',              body:'Il tuo PC è infetto da 47 virus.<br>Clicca OK per rimuoverli subito!',          btn:'OK rimuovi ora!' },
-  { cls:'pv', title:'☠ SYSTEM32 ERROR',       bold:'CRITICAL FAILURE',             body:'C:\\Windows\\System32 corrotto.<br>Hacker sta accedendo ai tuoi file!',          btn:'BLOCCA ORA' },
-  { cls:'pa', title:'🎰 Hai vinto!',           bold:'SEI IL VISITATORE FORTUNATO!', body:'Hai vinto un iPhone 15 Pro Max!<br>Riscatta il tuo premio adesso!',             btn:'RISCATTA GRATIS' },
-  { cls:'pe', title:'🔴 Windows Defender',     bold:'Trojan.Win32.Malware detected', body:'Dati bancari a rischio!<br>Chiamare immediatamente: +39 02 9999 0000',          btn:'Chiama adesso' },
-  { cls:'pf', title:'💚 Offerta speciale!',    bold:'ANTIVIRUS GRATIS PER SEMPRE!', body:'Scarica SuperProtect Pro 2024<br>solo per te — completamente FREE!',            btn:'SCARICA ORA' },
-  { cls:'pw', title:'⚡ Adobe Flash Player',   bold:'Aggiornamento richiesto',       body:'Flash Player non aggiornato.<br>Aggiorna subito per continuare.',               btn:'Aggiorna Flash' },
-  { cls:'pv', title:'💀 RANSOMWARE ALERT',     bold:'I TUOI FILE SONO CIFRATI',     body:'Paga 0.5 BTC entro 24 ore<br>oppure perdi tutto per sempre.',                   btn:'Paga riscatto' },
-  { cls:'pk', title:'🔥 FIREWALL BREACH',      bold:'INTRUSIONE RILEVATA!',          body:'3 hacker stanno accedendo al<br>tuo sistema in questo momento!',                btn:'BLOCCA ACCESSO' },
-  { cls:'pb', title:'📡 NSA MONITORING',       bold:'ATTENZIONE: SEI MONITORATO',   body:'Le tue attività online sono<br>tracciate da 14 agenzie governative.',            btn:'Scarica VPN gratis' },
-  { cls:'pa', title:'🏆 CONGRATULAZIONI!',     bold:'HAI VINTO € 5.000!',           body:'Sei stato selezionato tra<br>1.000.000 di utenti. Ritira ora!',                  btn:'RITIRA PREMIO' },
-  { cls:'pe', title:'🦠 TROJAN DETECTED',      bold:'Backdoor.Win32.Agent',          body:'Password email e social<br>già compromesse. Agisci subito!',                    btn:'Proteggi account' },
-  { cls:'pf', title:'💊 Dr. PC Cleaner',       bold:'IL TUO PC È AL 3% VELOCITÀ',   body:'102 file corrotti rallentano<br>il sistema. Pulisci ora gratis!',                btn:'PULISCI GRATIS' },
-  { cls:'pv', title:'👁 WEBCAM ATTIVA',         bold:'QUALCUNO TI STA GUARDANDO',    body:'La tua webcam è stata attivata<br>da remoto 3 minuti fa.',                       btn:'DISATTIVA ORA' },
-  { cls:'pk', title:'💳 ALERTA BANCA',          bold:'TRANSAZIONE SOSPETTA',          body:'€ 2.847 in uscita verso<br>conto estero non riconosciuto!',                     btn:'BLOCCA SUBITO' },
-  { cls:'pw', title:'🔔 Microsoft Support',    bold:'LICENZA WINDOWS SCADUTA',       body:'Il tuo Windows non è autentico.<br>Rinnova ora per evitare il blocco.',          btn:'Rinnova licenza' },
-  { cls:'pb', title:'📦 Delivery Failed',      bold:'PACCO NON CONSEGNATO',          body:'Il tuo pacco DHL è in giacenza.<br>Paga € 1,99 per sbloccarlo.',                 btn:'Sblocca pacco' },
-  { cls:'pa', title:'🎁 Amazon Gift Card',     bold:'CARTA REGALO DA €500',          body:'Come cliente fedele hai vinto<br>una gift card Amazon. Riscatta!',              btn:'Riscatta ora' },
-  { cls:'pe', title:'☢ SYSTEM MELTDOWN',       bold:'TEMPERATURA CPU: 127°C',        body:'Il tuo processore sta per<br>bruciarsi. Installa CoolMaster Pro!',              btn:'SALVA IL PC' },
+  { cls:'pw', title:'⚠ Attenzione!',        bold:'VIRUS RILEVATO!',               body:'Il tuo PC è infetto da 47 virus.<br>Clicca OK per rimuoverli subito!',         btn:'OK rimuovi ora!' },
+  { cls:'pv', title:'☠ SYSTEM32 ERROR',      bold:'CRITICAL FAILURE',              body:'C:\\Windows\\System32 corrotto.<br>Hacker sta accedendo ai tuoi file!',         btn:'BLOCCA ORA' },
+  { cls:'pa', title:'🎰 Hai vinto!',          bold:'SEI IL VISITATORE FORTUNATO!',  body:'Hai vinto un iPhone 15 Pro Max!<br>Riscatta il tuo premio adesso!',            btn:'RISCATTA GRATIS' },
+  { cls:'pe', title:'🔴 Windows Defender',    bold:'Trojan.Win32.Malware detected',  body:'Dati bancari a rischio!<br>Chiamare immediatamente: +39 02 9999 0000',         btn:'Chiama adesso' },
+  { cls:'pf', title:'💚 Offerta speciale!',   bold:'ANTIVIRUS GRATIS PER SEMPRE!',  body:'Scarica SuperProtect Pro 2024<br>solo per te — completamente FREE!',           btn:'SCARICA ORA' },
+  { cls:'pw', title:'⚡ Adobe Flash Player',  bold:'Aggiornamento richiesto',        body:'Flash Player non aggiornato.<br>Aggiorna subito per continuare.',              btn:'Aggiorna Flash' },
+  { cls:'pv', title:'💀 RANSOMWARE ALERT',    bold:'I TUOI FILE SONO CIFRATI',      body:'Paga 0.5 BTC entro 24 ore<br>oppure perdi tutto per sempre.',                  btn:'Paga riscatto' },
+  { cls:'pk', title:'🔥 FIREWALL BREACH',     bold:'INTRUSIONE RILEVATA!',           body:'3 hacker stanno accedendo al<br>tuo sistema in questo momento!',               btn:'BLOCCA ACCESSO' },
+  { cls:'pb', title:'📡 NSA MONITORING',      bold:'ATTENZIONE: SEI MONITORATO',    body:'Le tue attività online sono<br>tracciate da 14 agenzie governative.',           btn:'Scarica VPN gratis' },
+  { cls:'pa', title:'🏆 CONGRATULAZIONI!',    bold:'HAI VINTO € 5.000!',            body:'Sei stato selezionato tra<br>1.000.000 di utenti. Ritira ora!',                 btn:'RITIRA PREMIO' },
+  { cls:'pe', title:'🦠 TROJAN DETECTED',     bold:'Backdoor.Win32.Agent',           body:'Password email e social<br>già compromesse. Agisci subito!',                   btn:'Proteggi account' },
+  { cls:'pf', title:'💊 Dr. PC Cleaner',      bold:'IL TUO PC È AL 3% VELOCITÀ',   body:'102 file corrotti rallentano<br>il sistema. Pulisci ora gratis!',               btn:'PULISCI GRATIS' },
+  { cls:'pv', title:'👁 WEBCAM ATTIVA',        bold:'QUALCUNO TI STA GUARDANDO',     body:'La tua webcam è stata attivata<br>da remoto 3 minuti fa.',                      btn:'DISATTIVA ORA' },
+  { cls:'pk', title:'💳 ALERTA BANCA',         bold:'TRANSAZIONE SOSPETTA',           body:'€ 2.847 in uscita verso<br>conto estero non riconosciuto!',                    btn:'BLOCCA SUBITO' },
+  { cls:'pw', title:'🔔 Microsoft Support',   bold:'LICENZA WINDOWS SCADUTA',       body:'Il tuo Windows non è autentico.<br>Rinnova ora per evitare il blocco.',         btn:'Rinnova licenza' },
+  { cls:'pb', title:'📦 Delivery Failed',     bold:'PACCO NON CONSEGNATO',           body:'Il tuo pacco DHL è in giacenza.<br>Paga € 1,99 per sbloccarlo.',                btn:'Sblocca pacco' },
+  { cls:'pa', title:'🎁 Amazon Gift Card',    bold:'CARTA REGALO DA €500',           body:'Come cliente fedele hai vinto<br>una gift card Amazon. Riscatta!',             btn:'Riscatta ora' },
+  { cls:'pe', title:'☢ SYSTEM MELTDOWN',      bold:'TEMPERATURA CPU: 127°C',         body:'Il tuo processore sta per<br>bruciarsi. Installa CoolMaster Pro!',             btn:'SALVA IL PC' },
 ];
 
 const POSITIONS = [
   {top:'5%',  left:'1%'},  {top:'2%',  left:'20%'}, {top:'8%',  right:'5%'},
-  {top:'25%', left:'10%'},  {top:'28%', left:'29%'}, {top:'41%', right:'9%'},
+  {top:'25%', left:'10%'}, {top:'28%', left:'29%'}, {top:'41%', right:'9%'},
   {top:'33%', left:'3%'},  {top:'50%', left:'30%'}, {top:'50%', right:'1%'},
   {top:'72%', left:'4%'},  {top:'82%', left:'45%'}, {top:'72%', right:'12%'},
-  {top:'72%', right:'12%'}, {top:'80%', left:'20%'}, {top:'78%', right:'18%'},
-  {top:'60%', left:'20%'}, {top:'60%', right:'20%'}, {top:'40%', left:'40%'}
+  {top:'72%', right:'12%'},{top:'80%', left:'20%'}, {top:'78%', right:'18%'},
+  {top:'60%', left:'20%'}, {top:'60%', right:'20%'},{top:'40%', left:'40%'}
 ];
 
 function makePopup(tpl, pos) {
@@ -298,7 +374,6 @@ function makePopup(tpl, pos) {
   el.style.cssText = posCSS + 'display:block;';
   el.innerHTML = `<div class="pbar">${tpl.title}<div class="x">✕</div></div><div class="pbody"><b>${tpl.bold}</b>${tpl.body}<div class="pbtn">${tpl.btn}</div></div>`;
   p2.appendChild(el);
-  // piccola animazione shake
   let s = 0;
   const iv = setInterval(() => {
     el.style.transform = `translate(${(Math.random()-.5)*8}px,${(Math.random()-.5)*6}px)`;
@@ -311,13 +386,11 @@ function startPhase2() {
   document.getElementById('phase2').style.display = 'block';
   initMatrix();
 
-  // sequenza: 20 popup, uno ogni 220ms, riusa template e posizioni random
   const totalPopups = 20;
   for (let i = 0; i < totalPopups; i++) {
     setTimeout(() => {
       const tpl = POPUP_TEMPLATES[i % POPUP_TEMPLATES.length];
       const pos = POSITIONS[i % POSITIONS.length];
-      // piccolo offset random per non sovrapporsi esattamente
       const offsetPos = {};
       for (const [k,v] of Object.entries(pos)) {
         if (v.endsWith('%')) {
@@ -329,11 +402,31 @@ function startPhase2() {
     }, i * 220);
   }
 
-  setTimeout(startPhase3, totalPopups * 220 + 1800);
+  // mostra il bottone dopo che tutti i popup sono apparsi
+  setTimeout(() => {
+    document.getElementById('close-all-btn').style.display = 'block';
+  }, totalPopups * 220 + 800);
+}
+
+/* ══ JUMPSCARE — triggered dal bottone ══ */
+let jumpscareTriggered = false;
+function triggerJumpscare() {
+  if (jumpscareTriggered) return;
+  jumpscareTriggered = true;
+  document.getElementById('close-all-btn').style.display = 'none';
+  document.getElementById('phase2').style.display = 'none';
+  const js = document.getElementById('jumpscare');
+  js.style.display = 'flex';
+  playSiren(3000);
+  setTimeout(() => {
+    js.style.display = 'none';
+    startPhase3();
+  }, 3000);
 }
 
 function initMatrix() {
   const c = document.getElementById('mc');
+  c.style.display = 'block';
   const ctx = c.getContext('2d');
   c.width = window.innerWidth; c.height = window.innerHeight;
   const fs = 14, ch = 'アイウエオカキクケコ0123456789ABCDEF#$%@!&*XYZ';
@@ -367,28 +460,25 @@ const logSteps = [
 ];
 
 function startPhase3() {
-  document.querySelectorAll('.popup').forEach(p => p.style.display='none');
-  const p3 = document.getElementById('phase3');
-  p3.style.display = 'flex';
+  document.getElementById('phase3').style.display = 'flex';
   const logEl = document.getElementById('log3');
   const bfill = document.getElementById('bfill3');
   const bpct  = document.getElementById('bpct3');
   const blbl  = document.getElementById('blbl3');
   let prog = 0;
 
-  function startProgress() {
-    const iv = setInterval(() => {
-      prog = Math.min(prog + Math.random()*0.39 + 0.19, 100);
-      bfill.style.width = prog+'%';
-      bpct.textContent = Math.floor(prog)+'%';
-      if (prog >= 100) {
-        clearInterval(iv);
-        bpct.textContent = '100%';
-        blbl.textContent = 'Download completato.';
-        setTimeout(startPhase4, 1200);
-      }
-    }, 80);
-  }
+  blbl.textContent = 'Downloading laurea.exe...';
+  const iv = setInterval(() => {
+    prog = Math.min(prog + Math.random()*0.39 + 0.19, 100);
+    bfill.style.width = prog+'%';
+    bpct.textContent = Math.floor(prog)+'%';
+    if (prog >= 100) {
+      clearInterval(iv);
+      bpct.textContent = '100%';
+      blbl.textContent = 'Download completato.';
+      setTimeout(startPhase4, 800);
+    }
+  }, 80);
 
   logSteps.forEach(s => {
     setTimeout(() => {
@@ -398,7 +488,6 @@ function startPhase3() {
       logEl.appendChild(line);
       logEl.querySelectorAll('.cur').forEach((c,i,arr)=>{ if(i<arr.length-1) c.remove(); });
       logEl.scrollTop = logEl.scrollHeight;
-      if (s.t === 500) { blbl.textContent='Downloading laurea.exe...'; startProgress(); }
     }, s.t);
   });
 }
